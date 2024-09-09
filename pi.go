@@ -1,19 +1,34 @@
 package main
 
-func CalculatePi() float64 {
-	n := 2.0
-	result := 3.0
-	terms := 100
+import "fmt"
+// struct PiCalculator {
 
-	for i := 1; i <= terms; i++ {
-		term := 4 / (n * (n+1) * (n+2))
-		if i % 2 == 0 {
-			result -= term
-		} else {
-			result += term
+// }
+
+
+func increasePrecision(pi float64, n float64, m int) float64 {
+	term := 4 / (n * (n+1) * (n+2))
+	if m % 2 == 0 {
+		return pi - term
+	} else {
+		return pi + term
+	}
+}
+
+
+func CalculatePi(cmdCh <-chan string, resultCh chan<- float64) float64 {
+	n := 2.0
+	pi := 3.0
+
+	for m := 1; true; m++ {
+		if len(cmdCh) == 1 {
+			fmt.Println("Exit command received")
+			break
 		}
+		pi = increasePrecision(pi, n, m)
 		n += 2.0
 	}
 
-	return result
+	resultCh <- pi
+	return pi
 }
