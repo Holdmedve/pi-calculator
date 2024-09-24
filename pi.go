@@ -1,6 +1,7 @@
 package main
 
 import "fmt"
+import "time"
 // struct PiCalculator {
 
 // }
@@ -22,13 +23,20 @@ func CalculatePi(cmdCh <-chan string, resultCh chan<- float64) float64 {
 
 	for m := 1; true; m++ {
 		if len(cmdCh) == 1 {
-			fmt.Println("Exit command received")
-			break
+			cmd := <-cmdCh
+			if cmd == "stop" {
+				fmt.Println("Exit command received")
+				break
+			} else if cmd == "show" {
+				resultCh <- pi
+			}
 		}
 		pi = increasePrecision(pi, n, m)
 		n += 2.0
+		time.Sleep(time.Second * 1)
 	}
 
 	resultCh <- pi
+	fmt.Println("result sent to result channel")
 	return pi
 }

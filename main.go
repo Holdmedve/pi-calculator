@@ -5,11 +5,12 @@ import "fmt"
 
 func main() {
 	cmdCh := make(chan string, 1)
-	resultCh := make(chan float64)
+	resultCh := make(chan float64, 0)
 
 	for true {
 		fmt.Println("Type an action:")
 		fmt.Println("Calculate Pi (p):")
+		fmt.Println("Show progress (s):")
 		fmt.Println("Exit (e):")
 
 		var input string
@@ -20,12 +21,19 @@ func main() {
 			case "p":
 				go CalculatePi(cmdCh, resultCh)
 			case "e":
-				cmdCh <- "asd"
+				cmdCh <- "stop"
 				exit = true
+			case "s":
+				cmdCh <- "show"
+				fmt.Printf("Progress: %.50f\n", <-resultCh)
 		}
 		
 		if exit {
-			fmt.Println(<-resultCh)
+			// if len(resultCh) == 0 {
+			// 	fmt.Println("No result to show")
+			// 	break
+			// }
+			fmt.Printf("Result recieved: %.50f\n", <-resultCh)
 			break
 		}
 	}
